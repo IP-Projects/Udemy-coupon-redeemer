@@ -7,3 +7,4 @@ Then uses selenium webdriver to redeem the coupons for you.
 # Requirements
 
 You need to place in the folder the geckodriver
+https://github.com/mozilla/geckodriver/releases
