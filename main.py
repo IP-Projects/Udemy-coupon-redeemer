@@ -6,11 +6,11 @@ from selenium.webdriver.common.keys import Keys
 import random
 import time
 
-maxPage = 1
+# maxPage = 1
 
 
 def getNumberOfPages():
-    global maxPage
+    maxPage = 0
     site = "https://onlinecourses.ooo"
     reqheaders = {
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
@@ -38,10 +38,11 @@ def getNumberOfPages():
         print(maxPage)
     except:
         maxPage = 1
+    return maxPage
 
 
 def getLinks():
-    global maxPage
+    maxPage = getNumberOfPages()
     for index in range(1, maxPage + 1):
 
         site = "https://onlinecourses.ooo/page/" + str(index) + '/'
@@ -106,75 +107,85 @@ def getCouponLink():
 # code running ok, but after 40 links a capcha is triggered
 
 
-def redeemCoupons():
+def redeemCoupons(username, password):
     with open('couponFile.txt') as fileWithLinks:
         siteList = fileWithLinks.readlines()
         siteList = [x.strip() for x in siteList]
     currentLink = 0
-    turn = 0
+    # turn = 0
 
-    options = webdriver.ChromeOptions()
-    options.binary_location = "<opera webdriver path>"
-    driver = webdriver.Opera(options=options)
+    options = webdriver.FirefoxOptions()
+    options.firefox_binary = "./geckodriver.exe"
+    driver = webdriver.Firefox(options=options)
+    # driver.get("https://www.udemy.com/")
+    driver.get("https://www.udemy.com/join/login-popup/")
+
+    # try:
+    #     time.sleep(random.randint(15, 30))
+    #     getFormButton = driver.find_element_by_xpath(
+    #         '/html/body/div[2]/div[1]/div[3]/div[4]/a')
+    #     getFormButton.click()
+    # except:
+    #     pass
+
+    time.sleep(random.randint(15, 40))
+
+    attempt = 0
+    succeded = False
+    while succeded is False and attempt < 15:
+        try:
+            usernameInput = driver.find_element_by_xpath(
+                f'//*[@id="email--{attempt}"]')
+            succeded = True
+        except:
+            attempt += 1
+    # print(usernameInput)
+    passwordInput = driver.find_element_by_xpath('//*[@id="id_password"]')
+
+    usernameInput.clear()
+    usernameInput.send_keys(username)
+
+    passwordInput.clear()
+    passwordInput.send_keys(password)
+
+    login = driver.find_element_by_xpath('//*[@id="submit-id-submit"]')
+    login.click()
 
     for site in siteList:
-        if(currentLink >= 855):
-            if(currentLink % 15 == 0):
-                driver.quit()
-                if(turn == 1):
-                    driver = webdriver.Opera(options=options)
-                    turn = 0
-                else:
-                    driver = webdriver.Firefox()
-                    turn = 1
+        # if(currentLink >= 855):
+            # if(currentLink % 15 == 0):
+                # driver.quit()
+                # if(turn == 1):
+                    # driver = webdriver.Opera(options=options)
+                    # turn = 0
+                # else:
+                #     driver = webdriver.Firefox()
+                #     turn = 1
 
-                driver.get("https://www.udemy.com/")
-
-                getFormButton = driver.find_element_by_xpath(
-                    '//*[@id="udemy"]/div[1]/div[2]/div[1]/div[4]/div[4]/div/button')
-                getFormButton.click()
-                time.sleep(random.randint(10, 40))
-
-                username = driver.find_element_by_xpath(
-                    '//*[@id="form-item-email"]/div/input')
-                print(username)
-                password = driver.find_element_by_xpath(
-                    '//*[@id="id_password"]')
-
-                username.clear()
-                username.send_keys('<udemy username>')
-
-                password.clear()
-                password.send_keys('<udemy password>')
-
-                login = driver.find_element_by_xpath(
-                    '//*[@id="submit-id-submit"]')
-                login.click()
-
-        if(currentLink > 855):
-            # used to open the link
-            driver.execute_script('window.open("' + site + '","_blank");')
-            time.sleep(random.randint(20, 60))  # wait for the website to load
-            # switch the driver to the new page
-            driver.switch_to_window(driver.window_handles[-1])
-            try:
-                redeemButton = driver.find_element_by_css_selector(
-                    '#udemy > div.main-content-wrapper > div.main-content > div.full-width.full-width--streamer.streamer--complete > div > div:nth-child(2) > div.col-xxs-4.right-col.js-right-col > div > div.right-col__module > div.right-col__inner > div:nth-child(1) > div > div.buy-box__element.buy-box__element--row > div > div > div > button')
-                print(redeemButton)
-                redeemButton.click()
-            except:
-                print("already redeamed")
-            time.sleep(random.randint(20, 30))
-            driver.close()  # used to close the tab
-            # used to switch back to the main tab
-            driver.switch_to_window(driver.window_handles[0])
-            time.sleep(random.randint(20, 40))
+        # if(currentLink > 855):
+        # used to open the link
+        time.sleep(random.randint(20, 180))  # wait for the website to load
+        driver.execute_script('window.open("' + site + '","_blank");')
+        # switch the driver to the new page
+        driver.switch_to.window(driver.window_handles[-1])
+        try:
+            redeemButton = driver.find_element_by_css_selector(
+                '#udemy > div.main-content-wrapper > div.main-content > div.full-width.full-width--streamer.streamer--complete > div > div:nth-child(2) > div.col-xxs-4.right-col.js-right-col > div > div.right-col__module > div.right-col__inner > div:nth-child(1) > div > div.buy-box__element.buy-box__element--row > div > div > div > button')
+            # print(redeemButton)
+            redeemButton.click()
+        except:
+            print("already redeamed")
+        time.sleep(random.randint(20, 30))
+        driver.close()  # used to close the tab
+        # used to switch back to the main tab
+        driver.switch_to.window(driver.window_handles[0])
+        time.sleep(random.randint(20, 60))
         currentLink = currentLink + 1
 
     driver.quit()
 
 
-# getNumberOfPages()
+# How to use, uncomment each function one by one, and input you username and password in the last one, in general 300 links are more than enough, a capcha will be triggered a lot earlier probably
 # getLinks()
 # getCouponLink()
-redeemCoupons()
+redeemCoupons('<udemy username>', '<udemy password>')
