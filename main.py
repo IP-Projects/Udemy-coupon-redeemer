@@ -169,6 +169,7 @@ def redeemCoupons(username, password):
         # switch the driver to the new page
         driver.switch_to.window(driver.window_handles[-1])
         try:
+            time.sleep(random.randint(30, 60))  # wait for the website to load
             redeemButton = driver.find_element_by_xpath(
                 '/html/body/div[2]/div[3]/div[5]/div/div[2]/div[2]/div/div[1]/div[2]/div/div[1]/div/div[5]/div/div/div/button')
             # print(redeemButton)
