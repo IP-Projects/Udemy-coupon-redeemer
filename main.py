@@ -169,8 +169,8 @@ def redeemCoupons(username, password):
         # switch the driver to the new page
         driver.switch_to.window(driver.window_handles[-1])
         try:
-            redeemButton = driver.find_element_by_css_selector(
-                '#udemy > div.main-content-wrapper > div.main-content > div.full-width.full-width--streamer.streamer--complete > div > div:nth-child(2) > div.col-xxs-4.right-col.js-right-col > div > div.right-col__module > div.right-col__inner > div:nth-child(1) > div > div.buy-box__element.buy-box__element--row > div > div > div > button')
+            redeemButton = driver.find_element_by_xpath(
+                '/html/body/div[2]/div[3]/div[5]/div/div[2]/div[2]/div/div[1]/div[2]/div/div[1]/div/div[5]/div/div/div/button')
             # print(redeemButton)
             redeemButton.click()
         except:
